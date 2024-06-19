@@ -13,7 +13,6 @@ router.get('/protected', authMiddleware, (req, res) => {
   });
 router.post('/register', register);
 router.post('/login', login);
-// router.post("/posts", authMiddleware, newPost);
-// router.get("/posts",authMiddleware, getPost);
+
 
 module.exports = router;
