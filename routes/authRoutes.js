@@ -3,7 +3,7 @@ const { register, login } = require('../controllers/authController');
 const authMiddleware = require('../middleware/authMiddleware');
 const router = express.Router();
 
-const {household,joinHousehold, createHousehold } = require('../controllers/profileController');
+const {household,joinHousehold, createHousehold, searchHouseholds } = require('../controllers/profileController');
 
 
 
@@ -20,7 +20,9 @@ router.get('/profile', authMiddleware, household);
 
 
 // Household routes
+router.get('/households', authMiddleware, searchHouseholds);
 router.post('/households/join', authMiddleware, joinHousehold);
 router.post('/households/create', authMiddleware, createHousehold);
+
 
 module.exports = router;

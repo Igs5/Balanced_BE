@@ -93,5 +93,17 @@ const household = async (req, res) => {
       res.status(500).json({ message: 'Server error' });
     }
   };
+
+  //SEARCH Households
+  const searchHouseholds = async (req, res) => {
+    try {
+      const { search } = req.query;
+      const households = await Household.find({ name: { $regex: search, $options: 'i' } }); // Case-insensitive search
+      res.json(households);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: 'Server error' });
+    }
+  };
   
-  module.exports = { household, joinHousehold, createHousehold };
+  module.exports = { household, joinHousehold, createHousehold, searchHouseholds };
