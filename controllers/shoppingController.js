@@ -78,5 +78,19 @@ const addItem = async (req, res) => {
         res.status(500).json({ message: 'Server error' });
       }
   }
+
+  //Delete bought item button
+  const deleteBoughtItem = async (req, res) => {
+    try {
+      const item = await BoughtItem.findByIdAndDelete(req.params.id);
+      if (!item) {
+        return res.status(404).json({ message: 'Bought item not found' });
+      }
+      res.json({ message: 'Bought item deleted' });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: 'Server error' });
+    }
+  }
   
-  module.exports = { addItem, getItems, getBoughtItems, buyItem,deleteItem };
+  module.exports = { addItem, getItems, getBoughtItems, buyItem,deleteItem, deleteBoughtItem };
