@@ -5,8 +5,7 @@ const router = express.Router();
 
 const {household,joinHousehold, createHousehold, searchHouseholds } = require('../controllers/profileController');
 
-
-
+const { addItem, getItems, getBoughtItems, buyItem,deleteItem, deleteBoughtItem } = require("../controllers/shoppingController");
 
 
 router.get('/protected', authMiddleware, (req, res) => {
@@ -24,5 +23,12 @@ router.get('/households', authMiddleware, searchHouseholds);
 router.post('/households/join', authMiddleware, joinHousehold);
 router.post('/households/create', authMiddleware, createHousehold);
 
+// Shopping routes
+router.post('/shopping/add', authMiddleware, addItem);
+router.get('/shopping/items', authMiddleware, getItems);
+router.get('/shopping/bought-items', authMiddleware, getBoughtItems);
+router.post('/shopping/buy', authMiddleware, buyItem);
+router.delete("/shopping/:id",authMiddleware, deleteItem)
+router.delete('/shopping/bought/:id', deleteBoughtItem);
 
 module.exports = router;
