@@ -6,7 +6,7 @@ const router = express.Router();
 const {household,joinHousehold, createHousehold, searchHouseholds } = require('../controllers/profileController');
 
 const { addItem, getItems, getBoughtItems, buyItem,deleteItem, deleteBoughtItem } = require("../controllers/shoppingController");
-
+const {getBalances}=require("../controllers/balanceController")
 
 router.get('/protected', authMiddleware, (req, res) => {
     res.status(200).json({ message: 'This is a protected route', user: req.userData });
@@ -30,5 +30,9 @@ router.get('/shopping/bought-items', authMiddleware, getBoughtItems);
 router.post('/shopping/buy', authMiddleware, buyItem);
 router.delete("/shopping/:id",authMiddleware, deleteItem)
 router.delete('/shopping/bought/:id', deleteBoughtItem);
+
+//Balance routes
+router.get('/balances',authMiddleware, getBalances);
+
 
 module.exports = router;

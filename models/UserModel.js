@@ -11,8 +11,13 @@ const mongoose = require('mongoose');
          type: String,
         required: true },
      household_id: {
-         type: mongoose.Schema.Types.ObjectId, ref: 'Household' }
-   });
+         type: mongoose.Schema.Types.ObjectId, ref: 'Household' },
+      balance: { 
+         type: Number, 
+         default: 0 
+          }
+   
+      });
 
    const User = mongoose.model('User', userSchema);
 
