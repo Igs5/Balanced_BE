@@ -15,7 +15,12 @@ const mongoose = require('mongoose');
       balance: { 
          type: Number, 
          default: 0 
-          }
+          },
+          debts: {
+             type: Map, 
+             of: Number, 
+             default: {} }
+
    
       });
 

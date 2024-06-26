@@ -34,5 +34,8 @@ router.delete('/shopping/bought/:id', deleteBoughtItem);
 //Balance routes
 router.get('/balances',authMiddleware, getBalances);
 
+// Fetch detailed balance status
+router.get('/balances', authMiddleware, getBalances);
+
 
 module.exports = router;
