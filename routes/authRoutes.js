@@ -8,6 +8,9 @@ const {household,joinHousehold, createHousehold, searchHouseholds } = require('.
 const { addItem, getItems, getBoughtItems, buyItem,deleteItem, deleteBoughtItem } = require("../controllers/shoppingController");
 const {getBalances}=require("../controllers/balanceController")
 
+const{sendNotification, settleBalance, getNotification}=require("../controllers/notificationController");
+const {updateUserDebt}=require("../controllers/userController")
+
 router.get('/protected', authMiddleware, (req, res) => {
     res.status(200).json({ message: 'This is a protected route', user: req.userData });
   });
@@ -37,5 +40,13 @@ router.get('/balances',authMiddleware, getBalances);
 // Fetch detailed balance status
 router.get('/balances', authMiddleware, getBalances);
 
+
+//Notification routes
+router.post("/notifications/send",authMiddleware, sendNotification)
+router.post("/settle",authMiddleware, settleBalance)
+// router.get("/notifications",authMiddleware, getNotification)
+
+//user debbt
+router.put("/users/:id", authMiddleware, updateUserDebt)
 
 module.exports = router;
