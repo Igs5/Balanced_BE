@@ -1,5 +1,7 @@
 const ShoppingItem =require("../models/ShoppingItemModel");
 const BoughtItem = require("../models/BoughtItemModel");
+const { updateBalances } = require('./balanceController');
+const History=require("../models/HistoryModel")
 
 //ADDING, RETRIEVING AND MOVING ITEMS from one list to the other
 
@@ -54,8 +56,20 @@ const addItem = async (req, res) => {
   
       await boughtItem.save();
       await ShoppingItem.deleteOne({ _id: itemId }); 
-      
+      // Update the balances of all users in the household
+      await updateBalances(req.user.household_id, req.user._id, cost);
      
+
+       // Record the purchase in history
+    const historyEntry = new History({
+      household_id: req.user.household_id,
+      items: [{ name: item.name, cost, buyer: req.user.id }],
+      totalCost: cost
+    });
+
+    await historyEntry.save();
+
+
       const updatedBoughtItems = await BoughtItem.find({ household_id: req.user.household_id }).populate('buyer', 'username');
       res.status(201).json(updatedBoughtItems);
     } catch (error) {
@@ -63,6 +77,8 @@ const addItem = async (req, res) => {
       res.status(500).json({ message: 'Server error' });
     }
   };
+
+
 
   //delete item from shopping list
   const deleteItem=async(req,res)=>{
@@ -93,4 +109,4 @@ const addItem = async (req, res) => {
     }
   }
   
-  module.exports = { addItem, getItems, getBoughtItems, buyItem,deleteItem, deleteBoughtItem };
+  module.exports = { addItem, getItems, getBoughtItems, buyItem,deleteItem, deleteBoughtItem  };

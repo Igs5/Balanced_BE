@@ -9,6 +9,7 @@ const householdSchema = new mongoose.Schema({
       ref: 'User' }]
 });
 
-const Household = mongoose.model('Household', householdSchema);
+// const Household = mongoose.model('Household', householdSchema);
 
-module.exports = Household;
+// module.exports = Household;
+module.exports = mongoose.model('Household', householdSchema);
