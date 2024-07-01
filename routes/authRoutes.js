@@ -1,12 +1,20 @@
 const express = require('express');
+const multer=require("multer")
 const { register, login } = require('../controllers/authController');
 const authMiddleware = require('../middleware/authMiddleware');
 const router = express.Router();
+const profilePictureRoutes = require('./profilePictureRoutes'); 
 
 const {household,joinHousehold, createHousehold, searchHouseholds } = require('../controllers/profileController');
 
 const { addItem, getItems, getBoughtItems, buyItem,deleteItem, deleteBoughtItem } = require("../controllers/shoppingController");
 const {getBalances}=require("../controllers/balanceController")
+
+
+const {storage}=require("../config/cloudinary")
+
+const upload = multer({ storage });
+
 
 router.get('/protected', authMiddleware, (req, res) => {
     res.status(200).json({ message: 'This is a protected route', user: req.userData });
@@ -36,6 +44,10 @@ router.get('/balances',authMiddleware, getBalances);
 
 // Fetch detailed balance status
 router.get('/balances', authMiddleware, getBalances);
+
+
+// Integrate the profile picture routes
+router.use('/profile-picture', profilePictureRoutes);
 
 
 module.exports = router;
