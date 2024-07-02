@@ -38,22 +38,23 @@ const register = async(req,res)=>{
     }
 }
 
-//LOGIN: 
 const login = async (req, res) => {
-    const { email, password } = req.body;
-    //check if user exists
-    try {
-      const user = await User.findOne({ email });
-      if (!user) {
-        return res.status(404).json({ message: 'User not found' });
-      }
-      //check password
-      const isPasswordCorrect = await bcrypt.compare(password, user.password);
-      if (!isPasswordCorrect) {
-        return res.status(400).json({ message: 'Invalid credentials' });
-      }
+  const { email, password } = req.body;
 
-      // Create JWT token
+  try {
+    // Check if user exists
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // Check password
+    const isPasswordCorrect = await bcrypt.compare(password, user.password);
+    if (!isPasswordCorrect) {
+      return res.status(400).json({ message: 'Invalid credentials' });
+    }
+
+    // Create JWT token
     const payload = {
       user: {
         id: user._id,
@@ -63,29 +64,67 @@ const login = async (req, res) => {
     };
     console.log('Payload:', payload);
 
-    const token= jwt.sign(
+    const token = jwt.sign(
       payload,
       process.env.JWT_SECRET, // Ensure JWT_SECRET matches your .env file
-      { expiresIn: '1h' }, // Optional: token expiration
-      // (err, token) => {
-      //   if (err) throw err;
-      //   console.log(token)
-        // res.json({ token });
-      // }
+      { expiresIn: '1h' } // Optional: token expiration
     );
 
-      //create JWT
-      // const token = jwt.sign(
-      //   { email: user.email, id: user._id },
-      //   process.env.JWT_SECRET, // Use a strong secret key in production
-      //   { expiresIn: '1h' }
-      // );
-  
-       res.status(200).json({ token, username:user.username });
+    // Respond with token, user ID, and username
+    res.status(200).json({ token, userId: user._id, username: user.username });
+  } catch (error) {
+    res.status(500).json({ message: 'Something went wrong' });
+  }
+};
 
-    } catch (error) {
-      res.status(500).json({ message: 'Something went wrong' });
-    }
-  };
+// //LOGIN PREVIOUS APPROACH: 
+// const login = async (req, res) => {
+//     const { email, password } = req.body;
+//     //check if user exists
+//     try {
+//       const user = await User.findOne({ email });
+//       if (!user) {
+//         return res.status(404).json({ message: 'User not found' });
+//       }
+//       //check password
+//       const isPasswordCorrect = await bcrypt.compare(password, user.password);
+//       if (!isPasswordCorrect) {
+//         return res.status(400).json({ message: 'Invalid credentials' });
+//       }
+
+//       // Create JWT token
+//     const payload = {
+//       user: {
+//         id: user._id,
+//         email: user.email,
+//         username: user.username
+//       },
+//     };
+//     console.log('Payload:', payload);
+
+//     const token= jwt.sign(
+//       payload,
+//       process.env.JWT_SECRET, // Ensure JWT_SECRET matches your .env file
+//       { expiresIn: '1h' }, // Optional: token expiration
+//       // (err, token) => {
+//       //   if (err) throw err;
+//       //   console.log(token)
+//         // res.json({ token });
+//       // }
+//     );
+
+//       //create JWT
+//       // const token = jwt.sign(
+//       //   { email: user.email, id: user._id },
+//       //   process.env.JWT_SECRET, // Use a strong secret key in production
+//       //   { expiresIn: '1h' }
+//       // );
+  
+//        res.status(200).json({ token, username:user.username });
+
+//     } catch (error) {
+//       res.status(500).json({ message: 'Something went wrong' });
+//     }
+//   };
   
   module.exports = { register, login };
