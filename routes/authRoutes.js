@@ -3,8 +3,8 @@ const multer=require("multer")
 const { register, login } = require('../controllers/authController');
 const authMiddleware = require('../middleware/authMiddleware');
 const router = express.Router();
-const profilePictureRoutes = require('./profilePictureRoutes'); 
 
+const { uploadProfilePicture } = require("../controllers/profilePictureController");
 const {household,joinHousehold, createHousehold, searchHouseholds } = require('../controllers/profileController');
 
 const { addItem, getItems, getBoughtItems, buyItem,deleteItem, deleteBoughtItem } = require("../controllers/shoppingController");
@@ -47,7 +47,7 @@ router.get('/balances', authMiddleware, getBalances);
 
 
 // Integrate the profile picture routes
-router.use('/profile-picture', profilePictureRoutes);
-
+// router.use('/profile-picture', profilePictureRoutes);
+router.post('/profile-picture/upload', upload.single('profilePicture'), uploadProfilePicture);
 
 module.exports = router;
