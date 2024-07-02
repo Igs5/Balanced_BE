@@ -4,7 +4,7 @@ const { register, login } = require('../controllers/authController');
 const authMiddleware = require('../middleware/authMiddleware');
 const router = express.Router();
 
-const { uploadProfilePicture } = require("../controllers/profilePictureController");
+const { uploadProfilePicture,getProfile } = require("../controllers/profilePictureController");
 const {household,joinHousehold, createHousehold, searchHouseholds } = require('../controllers/profileController');
 
 const { addItem, getItems, getBoughtItems, buyItem,deleteItem, deleteBoughtItem } = require("../controllers/shoppingController");
@@ -22,9 +22,10 @@ router.get('/protected', authMiddleware, (req, res) => {
 router.post('/register', register);
 router.post('/login', login);
 
-// Profile route
+// Profile route for the HOUSEHOLD INFO
 router.get('/profile', authMiddleware, household);
-
+//Porfile Picture
+router.get("/profile-picture",authMiddleware,getProfile)
 
 // Household routes
 router.get('/households', authMiddleware, searchHouseholds);
@@ -48,6 +49,6 @@ router.get('/balances', authMiddleware, getBalances);
 
 // Integrate the profile picture routes
 // router.use('/profile-picture', profilePictureRoutes);
-router.post('/profile-picture/upload', upload.single('profilePicture'), uploadProfilePicture);
+router.post('/profile-picture/upload', authMiddleware, upload.single('profilePicture'), uploadProfilePicture);
 
 module.exports = router;

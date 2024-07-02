@@ -29,4 +29,25 @@ const uploadProfilePicture = async (req, res) => {
   }
 };
 
-module.exports = { uploadProfilePicture };
+const getProfile = async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id);
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // Return relevant user data, including profile picture if available
+    res.json({
+      username: user.username,
+      email: user.email,
+      profilePicture: user.profilePicture || '../assets/default_userImage.png',
+      // Add other relevant user data as needed
+    });
+  } catch (error) {
+    console.error('Error fetching profile:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
+module.exports = { uploadProfilePicture,getProfile };

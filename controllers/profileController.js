@@ -105,5 +105,7 @@ const household = async (req, res) => {
       res.status(500).json({ message: 'Server error' });
     }
   };
+
   
-  module.exports = { household, joinHousehold, createHousehold, searchHouseholds };
+  
+  module.exports = { household, joinHousehold, createHousehold, searchHouseholds};
