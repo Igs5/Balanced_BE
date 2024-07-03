@@ -1,4 +1,4 @@
-const User = require("../models/UserModel");
+const User = require("../models/UserModel.js");
 const bcrypt = require("bcrypt");
 const jwt =require("jsonwebtoken");
 
@@ -88,4 +88,5 @@ const login = async (req, res) => {
     }
   };
   
+
   module.exports = { register, login };
