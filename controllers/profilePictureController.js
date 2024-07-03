@@ -20,9 +20,14 @@ const uploadProfilePicture = async (req, res) => {
 
     // Update the user's profile picture URL
     user.profilePicture = profilePictureUrl;
-    await user.save();
+    
+      //  // Mark the 'profilePicture' field as modified
+      //  user.markModified('profilePicture');
 
+    await user.save();
+    console.log(profilePictureUrl)
     res.json({ profilePicture: profilePictureUrl });
+    
   } catch (error) {
     console.error('Error uploading profile picture:', error);
     res.status(500).send('Server error');
