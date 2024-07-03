@@ -19,6 +19,7 @@ const debtSchema = new Schema({
       default: false },
   payedConfirmation: { type: Boolean,
      default: false },
+     
   createdAt: { type: Date, 
     default: Date.now },
   updatedAt: { type: Date, 
