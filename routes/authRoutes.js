@@ -2,6 +2,7 @@ const express = require('express');
 const multer=require("multer")
 const { register, login } = require('../controllers/authController');
 const authMiddleware = require('../middleware/authMiddleware');
+const { updateDebt, postDebts } = require('../controllers/debtController.js');
 const router = express.Router();
 
 const { uploadProfilePicture,getProfile } = require("../controllers/profilePictureController");
@@ -17,8 +18,10 @@ const upload = multer({ storage });
 
 
 router.get('/protected', authMiddleware, (req, res) => {
-    res.status(200).json({ message: 'This is a protected route', user: req.userData });
-  });
+  res
+    .status(200)
+    .json({ message: 'This is a protected route', user: req.userData });
+});
 router.post('/register', register);
 router.post('/login', login);
 
@@ -37,11 +40,11 @@ router.post('/shopping/add', authMiddleware, addItem);
 router.get('/shopping/items', authMiddleware, getItems);
 router.get('/shopping/bought-items', authMiddleware, getBoughtItems);
 router.post('/shopping/buy', authMiddleware, buyItem);
-router.delete("/shopping/:id",authMiddleware, deleteItem)
+router.delete('/shopping/:id', authMiddleware, deleteItem);
 router.delete('/shopping/bought/:id', deleteBoughtItem);
 
 //Balance routes
-router.get('/balances',authMiddleware, getBalances);
+router.get('/balances', authMiddleware, getBalances);
 
 // Fetch detailed balance status
 router.get('/balances', authMiddleware, getBalances);
@@ -50,5 +53,8 @@ router.get('/balances', authMiddleware, getBalances);
 // Integrate the profile picture routes
 // router.use('/profile-picture', profilePictureRoutes);
 router.post('/profile-picture/upload', authMiddleware, upload.single('profilePicture'), uploadProfilePicture);
+//debts
+router.post('/debts', authMiddleware, postDebts);
+router.put('/debts/:id', authMiddleware, postDebts);
 
 module.exports = router;

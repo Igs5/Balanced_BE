@@ -1,6 +1,6 @@
 //home profile section. USER'S HOUSEHOLD
-const User = require("../models/UserModel");
-const Household =require("../models/HouseholdModel")
+const User = require("../models/UserModel.js");
+const Household =require("../models/HouseholdModel.js")
 
 
 // Function to get the user's household info
