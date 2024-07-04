@@ -4,7 +4,7 @@ const { register, login } = require('../controllers/authController');
 const authMiddleware = require('../middleware/authMiddleware');
 const { updateDebt, postDebts } = require('../controllers/debtController.js');
 const router = express.Router();
-
+const { getCurrentUser } = require('../controllers/UsersControllers.js');
 const { uploadProfilePicture,getProfile } = require("../controllers/profilePictureController");
 const {household,joinHousehold, createHousehold, searchHouseholds } = require('../controllers/profileController');
 
@@ -24,6 +24,7 @@ router.get('/protected', authMiddleware, (req, res) => {
 });
 router.post('/register', register);
 router.post('/login', login);
+router.get('/me', authMiddleware, getCurrentUser);
 
 // Profile route for the HOUSEHOLD INFO
 router.get('/profile', authMiddleware, household);
@@ -34,6 +35,7 @@ router.get("/profile-picture",authMiddleware,getProfile)
 router.get('/households', authMiddleware, searchHouseholds);
 router.post('/households/join', authMiddleware, joinHousehold);
 router.post('/households/create', authMiddleware, createHousehold);
+router.put("/household/:id")
 
 // Shopping routes
 router.post('/shopping/add', authMiddleware, addItem);

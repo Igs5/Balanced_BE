@@ -1,15 +1,63 @@
 const mongoose = require('mongoose');
 
-const householdSchema = new mongoose.Schema({
-  name: { 
-    type: String, 
-    required: true },
-  members: [{
-     type: mongoose.Schema.Types.ObjectId,
-      ref: 'User' }]
+// const ItemsSchema = new mongoose.Schema({
+//   name: {
+//     type: String,
+//     required: true,
+//   },
+//   cost: {
+//     type: Number,
+//     required: true,
+//     default: 0,
+//   },
+//   buyer: {
+//     type: mongoose.Schema.Types.ObjectId,
+//     ref: 'User',
+//     required: true,
+//     default: '',
+//   },
+// });
+
+const DebtsSchema = new mongoose.Schema({
+  householdMember1: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+  },
+  householdMember2: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+  },
+  moneyToPay: {
+    type: Number,
+    default: 0,
+  },
+  moneyToRecive: {
+    type: Number,
+    default: 0,
+  },
+  payed: {
+    type: Boolean,
+    default: false,
+  },
+  payedConfirmation: {
+    type: Boolean,
+    default: false,
+  },
 });
 
-// const Household = mongoose.model('Household', householdSchema);
+const householdSchema = new mongoose.Schema({
+  name: {
+    type: String,
+    required: true,
+  },
+  members: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+    },
+  ],
+  debts: [DebtsSchema],
+  // items: [{ type: mongoose.Schema.Types.ObjectId, ref: 'BoughtItem' }],
+});
 
-// module.exports = Household;
 module.exports = mongoose.model('Household', householdSchema);

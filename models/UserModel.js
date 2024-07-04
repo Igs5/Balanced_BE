@@ -1,28 +1,6 @@
 const mongoose = require('mongoose');
 
 
-const debtsSchema = new mongoose.Schema({
-   user: {
-     type: Object,
-     _id: String,
-     username: String,
-   },
-   userOwed: {
-     type: Object,
-     _id: String,
-     username: String,
-   },
-   moneyOwed: Number,
-   payed: {
-     type: Boolean,
-     default: false,
-   },
-   payedConfirmation: {
-     type: Boolean,
-     default: false,
-   },
- });
- 
  const userSchema = new mongoose.Schema({
    username: {
      type: String,
@@ -44,10 +22,7 @@ const debtsSchema = new mongoose.Schema({
      type: Number,
      default: 0,
    },
-   debts: {
-     type: [debtsSchema],
-     default: [],
-   },
+  
    profilePicture: {
       type: String,
       default: '' 
