@@ -4,6 +4,60 @@ const BoughtItem = require("../models/BoughtItemModel.js");
 const { addBoughtItemToHistory } = require("../utils/historyUtils.js");
 
 
+// Controller to mark debt as paid
+const markDebtAsPaid = async (req, res) => {
+  const { householdId, debtorId, creditorId } = req.body;
+
+  try {
+    const household = await Household.findById(householdId);
+    const debt = household.debts.find(
+      (d) => d.householdMember1.equals(debtorId) && d.householdMember2.equals(creditorId)
+    );
+
+    if (debt) {
+      debt.paid = true;
+      await household.save();
+      res.json({ message: 'Debt marked as paid' });
+    } else {
+      res.status(404).json({ message: 'Debt not found' });
+    }
+  } catch (error) {
+    console.error('Error marking debt as paid:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
+// Controller to confirm debt payment
+const confirmDebtPayment = async (req, res) => {
+  const { householdId, debtorId, creditorId } = req.body;
+
+  try {
+    const household = await Household.findById(householdId);
+    const debt = household.debts.find(
+      (d) => d.householdMember1.equals(debtorId) && d.householdMember2.equals(creditorId)
+    );
+
+    if (debt) {
+      debt.paidConfirmation = true;
+
+      if (debt.paid && debt.paidConfirmation) {
+        debt.moneyToPay = 0;
+        debt.moneyToReceive = 0;
+      }
+
+      await household.save();
+      res.json({ message: 'Debt payment confirmed' });
+    } else {
+      res.status(404).json({ message: 'Debt not found' });
+    }
+  } catch (error) {
+    console.error('Error confirming debt payment:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
+
+
 const updateBalances = async (householdId) => {
   try {
     const household = await Household.findById(householdId).populate('members');
@@ -106,6 +160,10 @@ const createBoughtItem = async (req, res) => {
   const { name, cost, buyer } = req.body;
   const householdId = req.user.household_id;
 
+
+
+
+
   try {
     const newItem = new BoughtItem({
       name,
@@ -128,5 +186,5 @@ const createBoughtItem = async (req, res) => {
 };
 
 
-module.exports = { updateBalances, getBalances, createBoughtItem };
+module.exports = { markDebtAsPaid, confirmDebtPayment,updateBalances, getBalances, createBoughtItem };
 

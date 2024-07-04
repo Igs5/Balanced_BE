@@ -9,7 +9,7 @@ const { uploadProfilePicture,getProfile } = require("../controllers/profilePictu
 const {household,joinHousehold, createHousehold, searchHouseholds } = require('../controllers/profileController');
 
 const { addItem, getItems, getBoughtItems, buyItem,deleteItem, deleteBoughtItem } = require("../controllers/shoppingController");
-const {getBalances}=require("../controllers/balanceController")
+const {markDebtAsPaid, confirmDebtPayment, updateBalances, getBalances, createBoughtItem}=require("../controllers/balanceController")
 
 
 const {storage}=require("../config/cloudinary")
@@ -48,9 +48,9 @@ router.delete('/shopping/bought/:id', deleteBoughtItem);
 //Balance routes
 router.get('/balances', authMiddleware, getBalances);
 
-// Fetch detailed balance status
-router.get('/balances', authMiddleware, getBalances);
-
+router.post('/boughtitem', authMiddleware, createBoughtItem);
+router.post('/markdebtpaid', authMiddleware, markDebtAsPaid);
+router.post('/confirmdebtpayment', authMiddleware, confirmDebtPayment);
 
 // Integrate the profile picture routes
 // router.use('/profile-picture', profilePictureRoutes);
