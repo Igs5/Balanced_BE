@@ -1,8 +1,10 @@
 const Debt = require('../models/DebtsInfoModel.js');
+const User = require('../models/UserModel.js');
 
 const postDebts = async (req, res) => {
   try {
-    const { debts } = req.body;
+    const { debts, userId, } = req.body;
+    const user = 
     console.log(debts);
 
     const debtsCreated = await Debt.insertMany(req.body);
