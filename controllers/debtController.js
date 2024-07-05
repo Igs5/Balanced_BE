@@ -31,7 +31,7 @@ const updateDebts = async (req, res) => {
       // console.log('oldDebt', oldDebt);
       debts.map((newDebt) => {
         // console.log('NewDebt', newDebt);
-  
+
         if (
           oldDebt.householdMember1.toHexString() == newDebt.debtor._id &&
           oldDebt.householdMember2.toHexString() == newDebt.creditor._id
@@ -56,4 +56,23 @@ const updateDebts = async (req, res) => {
   }
 };
 
-module.exports = { updateDebts };
+const updateDebtByHouseholdId = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { newDebt } = req.body;
+    const household = await Household.findOneById({ id });
+    if (!household) res.status(404).json({ message: 'User not found!' });
+    const oldHouseholdDebts = household.debts.filter(
+      (debt) => newDebt._id !== debt._id
+    );
+    oldHouseholdDebts.push(newDebt);
+    household.debts = oldHouseholdDebts;
+    await household.save();
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+
+
+module.exports = { updateDebts, updateDebtByHouseholdId  };

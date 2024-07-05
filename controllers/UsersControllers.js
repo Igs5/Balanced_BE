@@ -12,4 +12,4 @@ const getCurrentUser = async (req, res) => {
   }
 };
 
-module.exports = { getCurrentUser };g
+module.exports = { getCurrentUser };

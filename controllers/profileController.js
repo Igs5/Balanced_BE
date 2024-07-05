@@ -114,9 +114,10 @@ const updateHousehold = async (req, res) => {
 
 const updateHouseholdDebts = async (req, res) => {
   try {
-    const { id } = res.params;
+    const { id } = req.params;
+    console.log(id);
     const users = await User.find({ household_id: id });
-    const household = await Household.findById({ id }).populate('members');
+    const household = await Household.findById({ _id: id }).populate('members');
     const debtors = users.filter((user) => user.balance < 0);
     const creditors = users.filter((user) => user.balance > 0);
     // console.log(debtors, creditors);
