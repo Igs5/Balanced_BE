@@ -1,7 +1,7 @@
 const express = require('express');
 const { register, login } = require('../controllers/authController');
 const authMiddleware = require('../middleware/authMiddleware');
-const { updateDebt, postDebts } = require('../controllers/debtController.js');
+const { updateDebts } = require('../controllers/debtController.js');
 const router = express.Router();
 const { getCurrentUser } = require('../controllers/UsersControllers.js');
 const {
@@ -9,8 +9,9 @@ const {
   joinHousehold,
   createHousehold,
   searchHouseholds,
+  updateHousehold,
+  updateHouseholdDebts
 } = require('../controllers/profileController');
-
 const {
   addItem,
   getItems,
@@ -37,7 +38,7 @@ router.get('/profile', authMiddleware, household);
 router.get('/households', authMiddleware, searchHouseholds);
 router.post('/households/join', authMiddleware, joinHousehold);
 router.post('/households/create', authMiddleware, createHousehold);
-router.put("/household/:id")
+router.put("/household/:id", authMiddleware, updateHouseholdDebts);
 
 // Shopping routes
 router.post('/shopping/add', authMiddleware, addItem);
@@ -54,7 +55,6 @@ router.get('/balances', authMiddleware, getBalances);
 router.get('/balances', authMiddleware, getBalances);
 
 //debts
-router.post('/debts', authMiddleware, postDebts);
-router.put('/debts/:id', authMiddleware, postDebts);
+router.post('/debts', updateDebts);
 
 module.exports = router;

@@ -31,7 +31,7 @@ const DebtsSchema = new mongoose.Schema({
     type: Number,
     default: 0,
   },
-  moneyToRecive: {
+  moneyToReceive: {
     type: Number,
     default: 0,
   },
@@ -44,6 +44,7 @@ const DebtsSchema = new mongoose.Schema({
     default: false,
   },
 });
+
 
 const householdSchema = new mongoose.Schema({
   name: {

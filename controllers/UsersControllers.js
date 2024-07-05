@@ -4,6 +4,7 @@ const getCurrentUser = async (req, res) => {
   try {
     const { _id } = req.user;
     const currentUser = await User.findById(_id).populate('household_id');
+
     if (!currentUser) res.json({ message: 'User not found!' });
     res.json(currentUser);
   } catch (error) {
@@ -11,5 +12,4 @@ const getCurrentUser = async (req, res) => {
   }
 };
 
-
-module.exports = { getCurrentUser };
+module.exports = { getCurrentUser };g
