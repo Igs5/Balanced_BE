@@ -14,7 +14,8 @@ const {
   joinHousehold,
   createHousehold,
   searchHouseholds,
-  updateHousehold
+  updateHousehold,
+  updateHouseholdDebts
 } = require('../controllers/profileController');
 const {
   addItem,
@@ -43,7 +44,7 @@ router.get('/profile', authMiddleware, household);
 router.get('/households', authMiddleware, searchHouseholds);
 router.post('/households/join', authMiddleware, joinHousehold);
 router.post('/households/create', authMiddleware, createHousehold);
-router.put("/household/:id", authMiddleware, updateHousehold);
+router.put("/household/:id", authMiddleware, updateHouseholdDebts);
 
 // Shopping routes
 router.post('/shopping/add', authMiddleware, addItem);
