@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const debtsSchema = new mongoose.Schema({
+const debtSchema = new mongoose.Schema({
     user: {
       type: Object,
       _id: String,
@@ -24,4 +24,4 @@ const debtsSchema = new mongoose.Schema({
 
   const DebtsInfo = mongoose.model('DebtsInfo', debtsSchema);
 
-module.exports = DebtsInfo;
+module.exports = Debt;
