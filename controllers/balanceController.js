@@ -1,8 +1,7 @@
-const User = require("../models/UserModel.js");
-const Household = require("../models/HouseholdModel.js");
-const BoughtItem = require("../models/BoughtItemModel.js");
-const { addBoughtItemToHistory } = require("../utils/historyUtils.js");
-
+const User = require('../models/UserModel.js');
+const Household = require('../models/HouseholdModel.js');
+const BoughtItem = require('../models/BoughtItemModel.js');
+const { addBoughtItemToHistory } = require('../utils/historyUtils.js');
 
 const updateBalances = async (householdId) => {
   try {
@@ -13,13 +12,15 @@ const updateBalances = async (householdId) => {
     const balanceMap = {};
     const payments = {};
 
-    members.forEach(member => {
+    members.forEach((member) => {
       balanceMap[member._id] = 0; // Initialize each member's balance
       payments[member._id] = 0; // Initialize each member's payments
     });
 
     // Fetch all bought items for the household
-    const boughtItems = await BoughtItem.find({ household_id: householdId }).populate('buyer', 'username');
+    const boughtItems = await BoughtItem.find({
+      household_id: householdId,
+    }).populate('buyer', 'username');
 
     // Calculate total cost
     const totalCost = boughtItems.reduce((acc, item) => acc + item.cost, 0);
@@ -29,12 +30,12 @@ const updateBalances = async (householdId) => {
     const sharePerMember = totalCost / memberCount;
 
     // Calculate how much each member has paid
-    boughtItems.forEach(item => {
+    boughtItems.forEach((item) => {
       payments[item.buyer._id] += item.cost;
     });
 
     // Calculate balance for each member
-    members.forEach(member => {
+    members.forEach((member) => {
       balanceMap[member._id] = payments[member._id] - sharePerMember;
     });
 
@@ -42,7 +43,7 @@ const updateBalances = async (householdId) => {
     let debtors = [];
     let creditors = [];
 
-    members.forEach(member => {
+    members.forEach((member) => {
       if (balanceMap[member._id] < 0) {
         debtors.push({ member: member._id, amount: balanceMap[member._id] });
       } else if (balanceMap[member._id] > 0) {
@@ -55,7 +56,7 @@ const updateBalances = async (householdId) => {
 
     const debtsMap = {};
 
-    members.forEach(member => {
+    members.forEach((member) => {
       debtsMap[member._id] = {};
     });
 
@@ -78,15 +79,16 @@ const updateBalances = async (householdId) => {
     console.log(members);
     console.log(debtsMap);
     // Update each member's balance and debts
-    await Promise.all(members.map(async member => {
-      member.balance = balanceMap[member._id];
-      member.debts = debtsMap[member._id];
-      await member.save();
-    }));
+    await Promise.all(
+      members.map(async (member) => {
+        member.balance = balanceMap[member._id];
+        member.debts = debtsMap[member._id];
+        await member.save();
+      })
+    );
 
     console.log('Final debtsMap:');
     console.log(debtsMap);
-
   } catch (error) {
     console.error('Error updating balances:', error);
   }
@@ -95,7 +97,10 @@ const updateBalances = async (householdId) => {
 const getBalances = async (req, res) => {
   try {
     const householdId = req.user.household_id;
-    const users = await User.find({ household_id: householdId }, 'username balance debts');
+    const users = await User.find(
+      { household_id: householdId },
+      'username balance debts'
+    );
     res.json(users);
   } catch (error) {
     console.error('Error fetching balances:', error);
@@ -112,7 +117,7 @@ const createBoughtItem = async (req, res) => {
       name,
       cost,
       buyer,
-      household_id: householdId
+      household_id: householdId,
     });
     console.log(newItem);
     await newItem.save();
@@ -128,6 +133,4 @@ const createBoughtItem = async (req, res) => {
   }
 };
 
-
 module.exports = { updateBalances, getBalances, createBoughtItem };
-

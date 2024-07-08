@@ -3,6 +3,7 @@ const User = require('../models/UserModel.js');
 const Household = require('../models/HouseholdModel.js');
 const BoughtItem = require('../models/BoughtItemModel.js');
 
+//FRIDAY VERSION: 
 // Function to get the user's household info
 const household = async (req, res) => {
   try {
@@ -245,3 +246,4 @@ module.exports = {
   updateHousehold,
   updateHouseholdDebts,
 };
+

@@ -1,23 +1,5 @@
 const mongoose = require('mongoose');
 
-// const ItemsSchema = new mongoose.Schema({
-//   name: {
-//     type: String,
-//     required: true,
-//   },
-//   cost: {
-//     type: Number,
-//     required: true,
-//     default: 0,
-//   },
-//   buyer: {
-//     type: mongoose.Schema.Types.ObjectId,
-//     ref: 'User',
-//     required: true,
-//     default: '',
-//   },
-// });
-
 const DebtsSchema = new mongoose.Schema({
   householdMember1: {
     type: mongoose.Schema.Types.ObjectId,

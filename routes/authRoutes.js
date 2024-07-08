@@ -1,8 +1,13 @@
 const express = require('express');
 const { register, login } = require('../controllers/authController');
 const authMiddleware = require('../middleware/authMiddleware');
-const { updateDebts } = require('../controllers/debtController.js');
-const router = express.Router();
+const { 
+  updateDebts,
+  markDebtAsPaid,
+  confirmDebtPayment,
+  getBalances,
+  createBoughtItem,
+} = require('../controllers/balanceController');
 const { getCurrentUser } = require('../controllers/UsersControllers.js');
 const {
   household,
@@ -27,6 +32,8 @@ const {
   uploadProfilePicture,
   getProfile,
 } = require('../controllers/profilePictureController');
+
+
 router.get('/protected', authMiddleware, (req, res) => {
   res
     .status(200)
@@ -54,7 +61,7 @@ router.post('/shopping/buy', authMiddleware, buyItem);
 router.delete('/shopping/:id', authMiddleware, deleteItem);
 router.delete('/shopping/bought/:id', deleteBoughtItem);
 
-//Balance routes
+// Balance routes
 router.get('/balances', authMiddleware, getBalances);
 
 // Fetch detailed balance status
@@ -72,3 +79,6 @@ router.post(
 );
 
 module.exports = router;
+
+
+
