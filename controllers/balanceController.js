@@ -75,7 +75,8 @@ const updateBalances = async (householdId) => {
         creditors.shift();
       }
     }
-
+    console.log(members);
+    console.log(debtsMap);
     // Update each member's balance and debts
     await Promise.all(members.map(async member => {
       member.balance = balanceMap[member._id];

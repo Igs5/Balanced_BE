@@ -10,8 +10,10 @@ const {
   createHousehold,
   searchHouseholds,
   updateHousehold,
-  updateHouseholdDebts
+  updateHouseholdDebts,
 } = require('../controllers/profileController');
+const { upload } = require('../config/coudinary.js');
+
 const {
   addItem,
   getItems,
@@ -21,7 +23,10 @@ const {
   deleteBoughtItem,
 } = require('../controllers/shoppingController');
 const { getBalances } = require('../controllers/balanceController');
-
+const {
+  uploadProfilePicture,
+  getProfile,
+} = require('../controllers/profilePictureController');
 router.get('/protected', authMiddleware, (req, res) => {
   res
     .status(200)
@@ -38,7 +43,8 @@ router.get('/profile', authMiddleware, household);
 router.get('/households', authMiddleware, searchHouseholds);
 router.post('/households/join', authMiddleware, joinHousehold);
 router.post('/households/create', authMiddleware, createHousehold);
-router.put("/household/:id", authMiddleware, updateHouseholdDebts);
+router.put('/household/:id/debts', authMiddleware, updateHouseholdDebts);
+router.put('/household/:id/one-debt', authMiddleware, updateHousehold);
 
 // Shopping routes
 router.post('/shopping/add', authMiddleware, addItem);
@@ -55,6 +61,14 @@ router.get('/balances', authMiddleware, getBalances);
 router.get('/balances', authMiddleware, getBalances);
 
 //debts
-router.post('/debts', updateDebts);
+// router.post('/debts', updateDebts);
+
+// picture upload
+router.post(
+  '/profile-picture/upload',
+  authMiddleware,
+  upload.single('profilePicture'),
+  uploadProfilePicture
+);
 
 module.exports = router;

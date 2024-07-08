@@ -1,11 +1,13 @@
 //home profile section. USER'S HOUSEHOLD
 const User = require('../models/UserModel.js');
 const Household = require('../models/HouseholdModel.js');
+const BoughtItem = require('../models/BoughtItemModel.js');
 
 // Function to get the user's household info
 const household = async (req, res) => {
   try {
     const user = await User.findById(req.user.id).populate('household_id');
+    console.log(user);
     if (!user.household_id) {
       return res.status(404).json({ message: 'User has no household' });
     }
@@ -97,16 +99,81 @@ const searchHouseholds = async (req, res) => {
 
 const updateHousehold = async (req, res) => {
   try {
-    const { household } = req.body;
-    const householdFound = await findById(household.household_id);
+    const { id } = req.params;
+    const { newDebts, debt } = req.body;
+
+    const householdFound = await Household.findById(id);
+
+    const HouseholdMember1 = await User.findById(
+      debt.householdMember1
+    ).populate('household_id');
+
+    const HouseholdMember2 = await User.findById(
+      debt.householdMember2
+    ).populate('household_id');
+
+    if (!HouseholdMember1 || !HouseholdMember2)
+      res.status(404).json({ message: 'No users were found for this debt.' });
+
     if (!householdFound)
       res.status(404).json({ message: 'Household not found!' });
-    const updatedHousehold = await findByIdAndUpdate(
-      Household.household_id,
-      req.body,
-      { new: true }
-    );
-    res.status(200).json(updatedHousehold);
+
+    if (debt.payedConfirmation) {
+      if (debt.moneyToPay) {
+        console.log(debt.moneyToPay);
+        console.log(HouseholdMember1.balance);
+        console.log(HouseholdMember2.balance);
+        HouseholdMember1.balance += debt.moneyToPay;
+        console.log(HouseholdMember1.balance);
+        HouseholdMember2.balance -= debt.moneyToPay;
+        console.log(HouseholdMember2.balance);
+      } else {
+        HouseholdMember1.balance -= debt.moneyToReceive;
+        HouseholdMember2.balance += debt.moneyToReceive;
+      }
+
+      await HouseholdMember1.save();
+      await HouseholdMember2.save();
+      const itemsMember1 = await BoughtItem.find({
+        buyer: HouseholdMember1._id,
+      });
+      const itemsMember2 = await BoughtItem.find({
+        buyer: HouseholdMember2._id,
+      });
+      let itemsToDelete;
+      if (debt.moneyToPay) {
+        itemsToDelete = itemsMember1;
+
+        let cost = debt.moneyToPay;
+        itemsMember2.map((item) => {
+          if (cost - item.cost > 0 || cost - item.cost === 0) {
+            cost - item.cost;
+            itemsToDelete.push(item._id);
+          }
+        });
+      } else {
+        itemsToDelete = itemsMember2;
+        let cost = debt.moneyToReceive;
+        itemsMember1.map((item) => {
+          if (cost - item.cost > 0 || cost - item.cost === 0) {
+            cost -= item.cost;
+            itemsToDelete.push(item._id);
+          }
+        });
+      }
+      console.log(itemsToDelete);
+      await BoughtItem.deleteMany({ _id: { $in: itemsToDelete } });
+      debt.moneyToPay = 0;
+      debt.moneyToReceive = 0;
+    }
+
+    newDebts.push(debt);
+    householdFound.debts = newDebts;
+    await householdFound.save();
+
+    req.user.id === HouseholdMember1._id
+      ? res.status(200).json(HouseholdMember1)
+      : res.status(200).json(HouseholdMember1);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -115,51 +182,55 @@ const updateHousehold = async (req, res) => {
 const updateHouseholdDebts = async (req, res) => {
   try {
     const { id } = req.params;
-    console.log(id);
     const users = await User.find({ household_id: id });
     const household = await Household.findById({ _id: id }).populate('members');
     const debtors = users.filter((user) => user.balance < 0);
     const creditors = users.filter((user) => user.balance > 0);
-    // console.log(debtors, creditors);
+
     const debts = [];
-    debtors.map((debtor) => {
-      creditors.map((creditor) => {
-        const debt = {
-          debtor,
-          creditor,
-          moneyToPay: Math.min(-debtor.balance, creditor.balance),
-          moneyToReceive: 0,
-        };
-        debts.push(debt);
+    debtors.length > 0 &&
+      debtors.map((debtor) => {
+        creditors.map((creditor) => {
+          const debt = {
+            debtor,
+            creditor,
+            moneyToPay: Math.min(-debtor.balance, creditor.balance),
+            moneyToReceive: 0,
+          };
+          debts.push(debt);
+        });
       });
-    });
-    if (!debts.length) res.status(404).json({ message: 'Debt not found!' });
-    // console.log("New debts", debts);
+
     if (!household) res.status(404).json({ message: 'Household not found!' });
-    // console.log('Debts', household.debts);
+
     household.debts.map((oldDebt) => {
-      // console.log('oldDebt', oldDebt);
-      debts.map((newDebt) => {
-        // console.log('NewDebt', newDebt);
-        console.log(oldDebt.householdMember1.toHexString());
-        if (
-          oldDebt.householdMember1.toHexString() == newDebt.debtor._id &&
-          oldDebt.householdMember2.toHexString() == newDebt.creditor._id
-        ) {
-          oldDebt.moneyToPay = newDebt.moneyToPay;
-          console.log(oldDebt.moneyToPay);
-          oldDebt.moneyToReceive = newDebt.moneyToReceive;
-        } else if (
-          oldDebt.householdMember2.toHexString() == newDebt.debtor._id &&
-          oldDebt.householdMember1.toHexString() == newDebt.creditor._id
-        ) {
-          oldDebt.moneyToPay = newDebt.moneyToReceive;
-          oldDebt.moneyToReceive = newDebt.moneyToPay;
-        }
-      });
+      debts.length > 0 &&
+        debts.map((newDebt) => {
+          if (!oldDebt.payed) {
+            if (
+              oldDebt.householdMember1.toHexString() == newDebt.debtor._id &&
+              oldDebt.householdMember2.toHexString() == newDebt.creditor._id
+            ) {
+              oldDebt.moneyToPay = newDebt.moneyToPay;
+              oldDebt.moneyToReceive = newDebt.moneyToReceive;
+            } else if (
+              oldDebt.householdMember2.toHexString() == newDebt.debtor._id &&
+              oldDebt.householdMember1.toHexString() == newDebt.creditor._id
+            ) {
+              oldDebt.moneyToPay = newDebt.moneyToReceive;
+              oldDebt.moneyToReceive = newDebt.moneyToPay;
+            }
+          }
+        });
+
+      if (oldDebt.payedConfirmation) {
+        oldDebt.payed = false;
+        oldDebt.payedConfirmation = false;
+      }
     });
     await household.save();
     const updatedDebts = household.debts;
+    console.log(updatedDebts);
     res.status(200).json(updatedDebts);
   } catch (error) {
     res.status(500).json({ message: error.message });
