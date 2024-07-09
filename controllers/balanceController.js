@@ -96,6 +96,7 @@ const updateBalances = async (householdId) => {
 
 const getBalances = async (req, res) => {
   try {
+    console.log(req.user);
     const householdId = req.user.household_id;
     const users = await User.find(
       { household_id: householdId },

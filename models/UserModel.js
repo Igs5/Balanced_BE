@@ -17,6 +17,7 @@ const mongoose = require('mongoose');
    household_id: {
      type: mongoose.Schema.Types.ObjectId,
      ref: 'Household',
+     default: null
    },
    balance: {
      type: Number,

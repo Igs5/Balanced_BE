@@ -3,19 +3,21 @@ const User = require('../models/UserModel.js');
 const Household = require('../models/HouseholdModel.js');
 const BoughtItem = require('../models/BoughtItemModel.js');
 
-//FRIDAY VERSION: 
+//FRIDAY VERSION:
 // Function to get the user's household info
 const household = async (req, res) => {
   try {
-    const user = await User.findById(req.user.id).populate('household_id');
-    console.log(user);
-    if (!user.household_id) {
-      return res.status(404).json({ message: 'User has no household' });
+    console.log('userAUth', req.user);
+    const household = await Household.findById(req.user.household_id);
+    if (!household) {
+      return res.json({
+        message:
+          'You have no household yet. Please, create or join a household.',
+      });
     }
-    res.json({ household: user.household_id });
+    res.status(200).json(household);
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Server error' });
+    res.status(500).json({ message: error.message });
   }
 };
 
@@ -100,6 +102,8 @@ const searchHouseholds = async (req, res) => {
 
 const updateHousehold = async (req, res) => {
   try {
+    console.log(req.user.id);
+    const userUpdated = User.findById(req.user.id);
     const { id } = req.params;
     const { newDebts, debt } = req.body;
 
@@ -144,21 +148,20 @@ const updateHousehold = async (req, res) => {
       let itemsToDelete;
       if (debt.moneyToPay) {
         itemsToDelete = itemsMember1;
-
         let cost = debt.moneyToPay;
         itemsMember2.map((item) => {
-          if (cost - item.cost > 0 || cost - item.cost === 0) {
-            cost - item.cost;
+          if (cost - item.cost >= 0 || cost - item.cost === 0) {
             itemsToDelete.push(item._id);
+            cost - item.cost;
           }
         });
       } else {
         itemsToDelete = itemsMember2;
         let cost = debt.moneyToReceive;
         itemsMember1.map((item) => {
-          if (cost - item.cost > 0 || cost - item.cost === 0) {
-            cost -= item.cost;
+          if (cost - item.cost >= 0) {
             itemsToDelete.push(item._id);
+            cost -= item.cost;
           }
         });
       }
@@ -171,10 +174,7 @@ const updateHousehold = async (req, res) => {
     newDebts.push(debt);
     householdFound.debts = newDebts;
     await householdFound.save();
-
-    req.user.id === HouseholdMember1._id
-      ? res.status(200).json(HouseholdMember1)
-      : res.status(200).json(HouseholdMember1);
+    res.status(200).json(household);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -246,4 +246,3 @@ module.exports = {
   updateHousehold,
   updateHouseholdDebts,
 };
-

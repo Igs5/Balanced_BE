@@ -27,7 +27,7 @@ const register = async (req, res) => {
       { expiresIn: '1h' }
     );
     //respond with the token
-    res.status(201).json({ token });
+    res.status(201).json({ token, currentUser: newUser });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -37,26 +37,25 @@ const register = async (req, res) => {
 const login = async (req, res) => {
   const { email, password } = req.body;
   try {
-    const user = await User.findOne({ email }).populate("household_id");
+    const user = await User.findOne({ email }).populate('household_id');
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
     //check password
-    const isPasswordCorrect = await bcrypt.compare(password.toString(), user.password);
-    console.log(password);
+    const isPasswordCorrect = await bcrypt.compare(
+      password.toString(),
+      user.password
+    );
     if (!isPasswordCorrect) {
       return res.status(400).json({ message: 'Invalid credentials' });
     }
 
     // Create JWT token
     const payload = {
-      user: {
-        id: user._id,
-        email: user.email,
-        username: user.username,
-      },
+      id: user._id,
+      email: user.email,
+      username: user.username,
     };
-    console.log('Payload:', payload);
 
     const token = jwt.sign(
       payload,
